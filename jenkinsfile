@@ -1,0 +1,68 @@
+pipeline {
+    agent any
+
+    options{
+        timeout(time: 10, unit: 'MINUTES')
+        disableConcurrentBuilds()
+        //retry(1)
+    }
+    
+    environment {
+
+        appversion = ''
+    }
+
+
+    stages {
+        stage('reading the script') {
+            steps {
+                def packagejson = readjson: 'package.json'
+                appversion = package.json.version
+                echo "${appversion}"
+            }
+        }
+        stage('Test') {
+            steps {
+                sh 'echo This is test'
+                
+            }
+        }
+        stage('Deploy') {
+           
+            steps {
+
+                    sh 'echo This is deploy'
+                    //error 'pipeline failed'
+
+            }
+        }
+        stage('Print Params'){
+            steps{
+                echo "Hello ${params.PERSON}"
+                echo "Biography: ${params.BIOGRAPHY}"
+                echo "Toggle: ${params.TOGGLE}"
+                echo "Choice: ${params.CHOICE}"
+                echo "Password: ${params.PASSWORD}"  
+            }
+        }
+
+    }
+}    
+
+
+ post {
+
+           always{
+            echo "This sections runs always"
+            deleteDir()
+            
+           }
+           success{
+             echo "This section run when pipeline success"
+           }
+           failure{
+              echo "This section run when pipeline failure"
+          }
+        }
+     
+    
